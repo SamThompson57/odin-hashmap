@@ -23,8 +23,20 @@ class hashMap {
 
     }
 
+    // Step 2
+    hash(key){
+        let hashCode = 0;
+        console.log(typeof key)
+        const primeNumber = 17;
+        for (let i = 0; i < key.length; i++) {
+            hashCode = primeNumber * hashCode + key.charCodeAt(i);
+        }
+
+        return hashCode;
+    }
+
     findBucket(key){
-        const hashCode = hash(key)
+        const hashCode = this.hash(key)
         return this.buckets[hashCode % this.maxCapacity]
     }
     
@@ -35,33 +47,28 @@ class hashMap {
         }
         if (newNodeArray){
             newNodeArray.forEach(element => {
-                this.set(element[0], element[1])
+                for(let i = 0; i<element.length; i++){
+                    this.set(element[i][0], element[i][1])
+                }
+                
             });
         }
     }
     
     growthCheck(){
         if (this.capacity/this.maxCapacity >= this.loadFactor){
-            // Set the capacity to 0
-            // Get a list of all nodes
-            // Double max capacity
-            // Rebuild the buckets with the new max capacity
-            // For each node run the set function to put them into their buckets
-
+            console.log('Adding Buckets')
+            this.capacity = 0
+            console.log(`Capacity set to ${this.capacity}`)
+            const allNodes = this.entries()
+            console.log(allNodes)
+            this.maxCapacity = this.maxCapacity * 2
+            this.rebuildBuckets(allNodes)
+            console.log(`Capacity increased to ${this.maxCapacity}`)
         }
     }
     
-    // Step 2
-    hash(key){
-        let hashCode = 0;
-
-        const primeNumber = 31;
-        for (let i = 0; i < key.length; i++) {
-            hashCode = primeNumber * hashCode + string.charCodeAt(i);
-        }
-
-        return hashCode;
-    }
+    
 
     // Step 3
     set(key, value){
@@ -168,18 +175,6 @@ class linkedList {
         return false
     }
 
-    at(index, node = this.head){
-        if (node == null ) return 'No node'
-        if (index == 0) return node
-        return this.at(index-1, node.nextNode)
-    }
-
-    pop() {
-        const newTail = this.at(this.size-2)
-        newTail.nextNode = null
-        this.tail = newTail
-        this.size -- 
-    }
     contains(key, node = this.head) {
         if (node === null) {
             return false
@@ -218,17 +213,35 @@ class linkedList {
 
     allNodes(returnArray = [], node = this.head) {
         if (node === null) return returnArray;
-        returnArray.push([node.index, node.value])
+        returnArray.push([node.key, node.value])
         return this.allNodes(returnArray, node.nextNode)
     }
 
-    toString(theString = "", node = this.head, index = 0) {
-        console.log(`${index} The string is currently ${theString}`)
-        if (this.size === 1) return `( ${node.value} ) => null`
-        if (index === this.size) return theString += ` null `
-        index ++
-        theString += `( ${node.value} ) => `
-        return this.toString(theString, node.nextNode, index)
-    }
-
 }
+
+// Testing section
+
+const newHash = new hashMap
+
+newHash.set('Sam Thompson', 'Nov 20')
+newHash.set('Shoshana Page', 'Jul 03')
+newHash.set('Shoshana Page', 'Jul 05')
+newHash.set('Mike Burzio', 'Nov 28')
+
+console.log(newHash.entries())
+
+console.log(`Sam: ${newHash.hash('Sam Thompson')} Shana: ${newHash.hash('Shoshana Page')}`)
+
+console.log(`Expect True - ${newHash.has('Mike Burzio')}`)
+console.log(`Expect 'Nov 20' - ${newHash.get('Sam Thompson')}`)
+console.log(`Expect False - ${newHash.has('Cai Ajiz')}`)
+
+newHash.remove('Mike Burzio')
+
+console.log(`Expect False - ${newHash.has('Mike Burzio')}`)
+
+newHash.clear()
+
+newHash.set('Danny Thompson', 'Apr 10')
+
+console.log(newHash.entries())
