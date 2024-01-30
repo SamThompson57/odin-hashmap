@@ -1,18 +1,37 @@
 //MAKE A HASHMAP
 
+/*
+FOR DEMO,
+
+Key will be the name
+Value will be the date of birth
+
+*/
+
 // Step 1
 class hashMap {
 
     constructor(){
-        this.maxCapacity = 8
+        this.maxCapacity = 4
         this.loadFactor = 0.75
         this.capacity = 0
-        this.map = []
+        this.buckets = []
 
         while(this.map.length < this.maxCapacity){
             this.map.push(new linkedList)
         }
 
+    }
+
+    growthCheck(){
+        if (this.capacity/this.maxCapacity >= this.loadFactor){
+            // Set the capacity to 0
+            // Get a list of all nodes
+            // Double max capacity
+            // Rebuild the buckets with the new max capacity
+            // For each node run the set function to put them into their buckets
+
+        }
     }
     
     // Step 2
@@ -35,12 +54,14 @@ class hashMap {
         // Find the Bucket
         const bucket = hashCode % this.capacity
 
-        // Go to bucket and check the nodes key
-            //TODO create this in the linked list class 
-        // If it is the same Key set overwrite that value
-        // If that Key does not exist add a new node with the Key and Value, add one to the capacity and check the load factor
-
+        // insert the node into the bucket
+        if (this.buckets[bucket].insert(key, value)){
+            this.capacity ++
+            this.growthCheck()
+        }
     }
+
+    // Step 4
 
 }
 
@@ -57,18 +78,24 @@ class linkedList {
     
     
 
-    append(value) {
+    insert(key, value) {
         const newNode = node(key, value)
+
         if (this.size == 0) {
             this.size ++ 
             this.tail = newNode, 
             this.head = newNode
+            return true
         }
-        else {
+        
+        // check if the key already exists
+        if(!this.findAndReplace(key, value)){
             this.size ++
             this.tail.nextNode = newNode
             this.tail = newNode
+            return true
         } 
+        return false
     }
 
     at(index, node = this.head){
@@ -83,14 +110,14 @@ class linkedList {
         this.tail = newTail
         this.size -- 
     }
-    contains(value, node = this.head) {
+    contains(key, node = this.head) {
         if (node === null) {
             return false
         }
-        if (node.value == value) {
+        if (node.key == key) {
             return true
         }
-        return this.contains(value, node.nextNode)
+        return this.contains(key, node.nextNode)
         } 
 
     find(value, node = this.head, index = 0) {
@@ -98,6 +125,15 @@ class linkedList {
         if (node.value == value) return `${value} is at index:${index}`;
         index ++
         return this.find(value, node.nextNode, index)
+    }
+
+    findAndReplace(key, value, node = this.head) {
+        if (node === null) return false
+        if (node.key == key) {
+            node.value = value
+            return true
+        };
+        return this.find(key, value, node.nextNode)
     }
 
     toString(theString = "", node = this.head, index = 0) {
