@@ -23,6 +23,11 @@ class hashMap {
 
     }
 
+    findBucket(key){
+        const hashCode = hash(key)
+        return this.buckets[hashCode % this.maxCapacity]
+    }
+
     growthCheck(){
         if (this.capacity/this.maxCapacity >= this.loadFactor){
             // Set the capacity to 0
@@ -48,20 +53,36 @@ class hashMap {
 
     // Step 3
     set(key, value){
-        // Find the hash code for the key. 
-        const hashCode = hash(key)
-
-        // Find the Bucket
-        const bucket = hashCode % this.capacity
-
-        // insert the node into the bucket
-        if (this.buckets[bucket].insert(key, value)){
+        if (this.findBucket(key).insert(key, value)){
             this.capacity ++
             this.growthCheck()
         }
     }
 
     // Step 4
+    get(key){
+        return this.findBucket(key).find(key)
+    }
+
+    // Step 5
+    has(key){
+        return this.findBucket(key).contains(key)
+    }
+
+    // Step 6
+    remove(key){
+        if (this.findBucket(key).findAndRemove(key)){
+            this.capacity --
+            return true
+        }
+        
+        return false
+    }
+
+    // Step 7
+    length(){
+        return this.capacity
+    }
 
 }
 
@@ -114,26 +135,36 @@ class linkedList {
         if (node === null) {
             return false
         }
-        if (node.key == key) {
+        if (node.key === key) {
             return true
         }
         return this.contains(key, node.nextNode)
         } 
 
-    find(value, node = this.head, index = 0) {
-        if (node === null) return 'Value not found'
-        if (node.value == value) return `${value} is at index:${index}`;
-        index ++
-        return this.find(value, node.nextNode, index)
+    find(key, node = this.head) {
+        if (node === null) return false
+        if (node.key === key) return node.value;
+        return this.find(value, node.nextNode)
+    }
+
+    findAndRemove(key, node = this.head, previousNode = null) {
+        if (node === null) return false
+        if (node.key === key) {
+            if(!previousNode){
+                this.head = node.nextNode
+            } else previousNode.nextNode = node.nextNode
+            return true
+        };
+        return this.findAndRemove(key, node.nextNode, node)
     }
 
     findAndReplace(key, value, node = this.head) {
         if (node === null) return false
-        if (node.key == key) {
+        if (node.key === key) {
             node.value = value
             return true
         };
-        return this.find(key, value, node.nextNode)
+        return this.findAndReplace(key, value, node.nextNode)
     }
 
     toString(theString = "", node = this.head, index = 0) {
@@ -146,26 +177,3 @@ class linkedList {
     }
 
 }
-
-let theList = new linkedList()
-
-
-theList.append('Sarah')
-theList.append('Charlie')
-theList.prepend('John')
-
-console.log(theList.size)
-
-console.log(theList.head.value)
-console.log(theList.tail.value)
-console.log(theList.at(2).value)
-
-console.log(theList.contains('Charlie'))
-theList.pop()
-console.log(theList.contains('Charlie'))
-
-console.log(theList.find('Sarah'))
-console.log(theList.find('Sam'))
-
-
-console.log(theList.toString())
