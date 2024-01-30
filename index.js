@@ -17,8 +17,8 @@ class hashMap {
         this.capacity = 0
         this.buckets = []
 
-        while(this.map.length < this.maxCapacity){
-            this.map.push(new linkedList)
+        while(this.buckets.length < this.maxCapacity){
+            this.buckets.push(new linkedList)
         }
 
     }
@@ -27,7 +27,19 @@ class hashMap {
         const hashCode = hash(key)
         return this.buckets[hashCode % this.maxCapacity]
     }
-
+    
+    rebuildBuckets(newNodeArray = null){
+        this.buckets = []
+        while(this.buckets.length < this.maxCapacity){
+            this.buckets.push(new linkedList)
+        }
+        if (newNodeArray){
+            newNodeArray.forEach(element => {
+                this.set(element[0], element[1])
+            });
+        }
+    }
+    
     growthCheck(){
         if (this.capacity/this.maxCapacity >= this.loadFactor){
             // Set the capacity to 0
@@ -82,6 +94,43 @@ class hashMap {
     // Step 7
     length(){
         return this.capacity
+    }
+
+    // Step 8
+    clear(){
+        this.rebuildBuckets()
+    }
+
+    // Step 9
+    keys(){
+        const allNodes = this.entries()
+
+        allNodes.forEach(element => {
+            returnNodes.push(element[0])
+        })        
+        return returnNodes
+    }
+
+    // Step 10
+    values(){
+        const allNodes = this.entries()
+
+        allNodes.forEach(element => {
+            returnNodes.push(element[1])
+        })        
+        return returnNodes
+    }
+
+    // Step 11
+    entries(){
+        const allNodes = []
+
+        this.buckets.forEach(element => {
+            allNodes.push(element.allNodes())
+        })
+
+        return allNodes
+
     }
 
 }
@@ -165,6 +214,12 @@ class linkedList {
             return true
         };
         return this.findAndReplace(key, value, node.nextNode)
+    }
+
+    allNodes(returnArray = [], node = this.head) {
+        if (node === null) return returnArray;
+        returnArray.push([node.index, node.value])
+        return this.allNodes(returnArray, node.nextNode)
     }
 
     toString(theString = "", node = this.head, index = 0) {
